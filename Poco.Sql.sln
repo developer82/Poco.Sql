@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31206.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poco.Sql", "Poco.Sql\Poco.Sql.csproj", "{B8DC5366-5CA3-474A-8229-00E8C827068F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocoSql.Demo", "PocoSql.Demo\PocoSql.Demo.csproj", "{58A8C3E6-47FA-43C0-9C2E-756DAF4C8A09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocoSql.Test.Models", "PocoSql.Test.Models\PocoSql.Test.Models.csproj", "{69408406-7690-4EC4-B972-F736EA558542}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PocoSql.UnitTests", "PocoSql.UnitTests\PocoSql.UnitTests.csproj", "{18616522-DD06-40F5-8578-5D697F9059D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8DC5366-5CA3-474A-8229-00E8C827068F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8DC5366-5CA3-474A-8229-00E8C827068F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8DC5366-5CA3-474A-8229-00E8C827068F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8DC5366-5CA3-474A-8229-00E8C827068F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58A8C3E6-47FA-43C0-9C2E-756DAF4C8A09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58A8C3E6-47FA-43C0-9C2E-756DAF4C8A09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58A8C3E6-47FA-43C0-9C2E-756DAF4C8A09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58A8C3E6-47FA-43C0-9C2E-756DAF4C8A09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69408406-7690-4EC4-B972-F736EA558542}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69408406-7690-4EC4-B972-F736EA558542}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69408406-7690-4EC4-B972-F736EA558542}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69408406-7690-4EC4-B972-F736EA558542}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18616522-DD06-40F5-8578-5D697F9059D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18616522-DD06-40F5-8578-5D697F9059D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18616522-DD06-40F5-8578-5D697F9059D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18616522-DD06-40F5-8578-5D697F9059D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
