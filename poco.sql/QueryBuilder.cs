@@ -17,9 +17,6 @@ namespace Poco.Sql
     /// </summary>
     public class QueryBuilder
     {
-        public static QueryBuilderConfiguration Configuration = new QueryBuilderConfiguration();
-        
-        private static Dictionary<string, object> _mappings = new Dictionary<string, object>();
         private static Dictionary<string, string> _cachedQueries = new Dictionary<string, string>(); //TODO: implement caching
         private static PluralizationService _pluralizationService = PluralizationService.CreateService(CultureInfo.GetCultureInfo("en-us"));
 
@@ -36,11 +33,6 @@ namespace Poco.Sql
         public QueryBuilder(object obj)
         {
             _obj = obj;
-        }
-
-        public static void AddStaticMapping<T>(PocoSqlMapping<T> mapping)
-        {
-            _mappings.Add(typeof(T).FullName, mapping);
         }
 
         public QueryBuilder NamedQuery(string name)
@@ -97,13 +89,13 @@ namespace Poco.Sql
                 object obj = Activator.CreateInstance(collectionType);
 
                 string key = obj.GetType().FullName;
-                if (_mappings.ContainsKey(key))
+                if (Configuration.HasMap(key))
                 {
-                    var map = (IPocoSqlMapping)_mappings[key];
+                    var map = Configuration.GetMap(key);;
                     var relationship = map.GetRelationship(_obj.GetType().FullName);
 
                     string currentKey = _obj.GetType().FullName;
-                    var currentMap = (IPocoSqlMapping)_mappings[currentKey];
+                    var currentMap = Configuration.GetMap(key); ;
 
                     var val = _obj.GetType().GetProperty(currentMap.GetPrimaryKey()).GetValue(_obj);
                     string whereConditionStr = relationship.GetForeignKey() + " = " + val;
@@ -192,7 +184,7 @@ namespace Poco.Sql
             {
                 if (pluralizeTableNames != false)
                 {
-                    if (pluralizeTableNames == true || Configuration.PluralizeTableNames)
+                    if (pluralizeTableNames == true || Configuration.IsPluralizeTableNames)
                     {
                         if (_pluralizationService.IsSingular(tableName))
                             tableName = _pluralizationService.Pluralize(tableName);
@@ -214,7 +206,9 @@ namespace Poco.Sql
                 case QueryType.Delete:
                     _sql += String.Format("delete from {0}", tableName);
                     string primaryKey = getPrimaryKey(_obj);
-                    string deleteWhereValue = getPropertyValueAsSql(_obj, primaryKey);
+                    string deleteWhereValue = "@" + primaryKey;
+                    if (Configuration.ValuesInQueies)
+                        deleteWhereValue = getPropertyValueAsSql(_obj, primaryKey);
                     this.Where(String.Format("{0} = {1}", primaryKey, deleteWhereValue));
                     break;
                 case QueryType.StoredProcedure:
@@ -330,7 +324,9 @@ namespace Poco.Sql
                     if (_queryType == QueryType.Update)
                     {
                         var property = _obj.GetType().GetProperty(dbColumnName);
-                        string val = property.GetValue(_obj).ToString();
+                        string val = "@" + primaryKey;
+                        if (Configuration.ValuesInQueies)
+                            property.GetValue(_obj).ToString();
                         this.Where(primaryKey + " = " + val);
                     }
                     
@@ -348,7 +344,7 @@ namespace Poco.Sql
                         if (!String.IsNullOrEmpty(fieldName))
                         {
                             string insertVal;
-                            if (Configuration.InjectValuesToQueies)
+                            if (Configuration.ValuesInQueies)
                                 insertVal = getPropertyValueAsSql(_obj, fieldName);
                             else
                                 insertVal = "@" + fieldName;
@@ -361,7 +357,7 @@ namespace Poco.Sql
                     case QueryType.Update:
                     case QueryType.StoredProcedure:
                         string updateVal;
-                        if (Configuration.InjectValuesToQueies)
+                        if (Configuration.ValuesInQueies)
                             updateVal = getPropertyValueAsSql(_obj, fieldName, true);
                         else
                             updateVal = "@" + fieldName;
@@ -412,8 +408,8 @@ namespace Poco.Sql
         {
             IPocoSqlMapping map = null;
             string key = obj.GetType().FullName;
-            if (_mappings.ContainsKey(key))
-                map = (IPocoSqlMapping)_mappings[key];
+            if (Configuration.HasMap(key))
+                map = Configuration.GetMap(key);
             return map;
         }
 
@@ -442,7 +438,7 @@ namespace Poco.Sql
 
         public QueryBuilder Where<TSource>(Expression<Func<TSource, bool>> condition)
         {
-            _where += " where " + ExpressionEvaluator.Eval(condition.Body, Configuration.InjectValuesToQueies);
+            _where += " where " + ExpressionEvaluator.Eval(condition.Body, Configuration.ValuesInQueies);
             return this;
         }
         #endregion

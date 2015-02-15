@@ -31,16 +31,20 @@ namespace PocoSql.Demo
             Console.WriteLine("");
             Console.ResetColor();
 
-            QueryBuilder.Configuration.PluralizeTableNames = true; // for example: for object User the table name will be Users
-            QueryBuilder.Configuration.StoredProceduresPrefix = "stp_";
-            //QueryBuilder.Configuration.Comment = true;
-            //QueryBuilder.Configuration.InjectValuesToQueies = true;
-            //QueryBuilder.Configuration.SelectFullGraphAsDefault = true; // TODO: not completed yet
+            
+            // PocoSql configuration
+            Configuration.Initialize(config =>
+            {
+                config.PluralizeTableNames();
+                config.SetStoreProcedurePrefix("stp_");
+                //config.ShowComments();
+                //config.InjectValuesInQueies();
+                //config.SelectFullGraph(); // TODO: not completed yet
 
-            // Add mappings
-            QueryBuilder.AddStaticMapping(new UserMap());
-            QueryBuilder.AddStaticMapping(new OrderMap());
-            QueryBuilder.AddStaticMapping(new VUserMap());
+                config.AddMap(new UserMap());
+                config.AddMap(new OrderMap());
+                config.AddMap(new VUserMap());
+            });
 
             string sql;
 
@@ -68,6 +72,8 @@ namespace PocoSql.Demo
                 new Order() { UserId = 1, User = user, ItemName = "Item 4", OrderId = 1, Quantity = 2 },
                 new Order() { UserId = 1, User = user, ItemName = "Item 5", OrderId = 1, Quantity = 1 }
             };
+
+            var currentlyTestingSql = user.PocoSql().Update().ToString();
 
             sql = user.PocoSql().Select().ToString();
             Console.WriteLine("user.PocoSql().Select()");
@@ -108,6 +114,13 @@ namespace PocoSql.Demo
                 Console.WriteLine(ex.Message);
                 Console.ResetColor();
             }
+
+
+            // Currently testing
+            Console.WriteLine(
+                Environment.NewLine +
+                Environment.NewLine + "~~~~~~~~~~~~~~~~~~~~~~~~~" + Environment.NewLine + "Currently developing: " + Environment.NewLine + currentlyTestingSql);
+            
 
             Console.ReadLine();
         }

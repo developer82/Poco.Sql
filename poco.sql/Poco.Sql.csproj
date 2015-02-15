@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\CantUpdateVirtualException.cs" />
     <Compile Include="Helpers\ExpressionEvaluator.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="Interfaces\IPocoSqlMapping.cs" />
     <Compile Include="Interfaces\IRelationshipMap.cs" />
     <Compile Include="PocoSqlExtensions.cs" />
@@ -55,7 +56,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyMap.cs" />
     <Compile Include="QueryBuilder.cs" />
-    <Compile Include="QueryBuilderConfiguration.cs" />
     <Compile Include="QueryBuilderExceptions.cs" />
     <Compile Include="QueryBuilderOptions.cs" />
     <Compile Include="RelationshipMap.cs" />
