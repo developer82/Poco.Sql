@@ -1,6 +1,23 @@
 # Poco.Sql
 ##### Auto generate SQL statements from .NET objects
 
+## Configuration
+Confgiration can be executed only once in the application lifecycle. Once configured, it doesn't allow changing the configuration later on.
+
+Example configuration:
+```
+// PocoSql configuration
+Configuration.Initialize(config =>
+{
+  config.PluralizeTableNames();
+  config.SetStoreProcedurePrefix("stp_");
+  config.ShowComments();
+  config.InjectValuesInQueies();
+  config.SelectFullGraph();
+  config.AddMap(new EntityMap());
+});
+```
+
 ## Further Reading
 
 You can have more information about this project (and other stuff I do) on my blog at http://developer82.webe.co.il
