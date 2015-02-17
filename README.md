@@ -17,6 +17,7 @@ Configuration.Initialize(config =>
   config.AddMap(new EntityMap());
 });
 ```
+[Read more about Poco.Sql configuration](https://github.com/developer82/Poco.Sql/wiki/Configuration)
 
 ## Further Reading
 
