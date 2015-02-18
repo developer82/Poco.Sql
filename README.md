@@ -19,6 +19,26 @@ Configuration.Initialize(config =>
 ```
 [Read more about Poco.Sql configuration](https://github.com/developer82/Poco.Sql/wiki/Configuration)
 
+## Object Mapping
+
+Poco.Sql works out-of-the-box on any .NET class and without the need to configure or map anything. However, there might be cases where we would like to apply mapping on objects - map relationships between objects, map object properties to database fields, ignore properties, set custom table name for object, define stored procedures, and more...
+
+To allow such mapping, Poco.Sql has a mapping object that helps you define mappings between your objects and the database.
+
+To create a mapping object, create a new class that inherits from `Poco.Sql.PocoSqlMapping<T>`
+
+```
+public class UserMap : PocoSqlMapping<User>
+{
+    public UserMap()
+    {
+        // mapping configuration
+    }
+}
+```
+
+[Read more about Poco.Sql mappings](https://github.com/developer82/Poco.Sql/wiki/Object-Mapping)
+
 ## Further Reading
 
 You can have more information about this project (and other stuff I do) on my blog at http://developer82.webe.co.il
