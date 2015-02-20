@@ -39,6 +39,17 @@ public class UserMap : PocoSqlMapping<User>
 
 [Read more about Poco.Sql mappings](https://github.com/developer82/Poco.Sql/wiki/Object-Mapping)
 
+## Values Object Creator
+
+To save the time and lines of code in writing these objects, Poco.Sql has an helper class that knows how to create an object that's combined of your domain objects, and is specific to SQL statement.
+
+```
+var sql = "insert into Users(FirstName, LastName, DateOfBirth, LuckyNumber, IsRegistered) values(@FirstName, @LastName, @DateOfBirth, @LuckyNumber, @IsRegistered)";
+var data = ValuesObject.Create(sql, myUserObject /* , ... */);
+```
+
+[Read more about Poco.Sql Values Object Creator](https://github.com/developer82/Poco.Sql/wiki/Values-Object-Creator)
+
 ## Further Reading
 
 You can have more information about this project (and other stuff I do) on my blog at http://developer82.webe.co.il
