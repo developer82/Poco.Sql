@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -13,15 +14,60 @@ namespace Poco.Sql
     {
         public static object Create(params object[] args)
         {
-            Dictionary<string, object> values = new Dictionary<string, object>();
-            List<string> sqlParams = null;
-            int startPos = 0;
+            dynamic obj = new ExpandoObject();
 
+
+            List<string> sqlParams = getPramsFromSqlString(args);
+            int startPos = sqlParams == null ? 0 : 1; // if we have sqlParams that means that the first agrument is an sql string
+
+            // loop over all objects that were sent for merging
+            for (int i = startPos; i < args.Length; i++)
+            {
+                // get an object and make sure it's valid
+                object currentObj = args[i];
+                if (currentObj == null) continue;
+
+                IDictionary<String, Object> objDic = (IDictionary<String, Object>)obj;
+
+                // loop over all elements of current object
+                PropertyInfo[] propertyInfos = currentObj.GetType().GetProperties();
+                foreach (PropertyInfo propertyInfo in propertyInfos.Where(p => p.PropertyType.FullName.StartsWith("System") && !p.PropertyType.FullName.StartsWith("System.Collections"))) // only loop on objects that are not custom class
+                {
+                    if (objDic.ContainsKey(propertyInfo.Name)) continue; // same key can't be added twice (first key found will be used)
+
+                    var val = propertyInfo.GetValue(currentObj);
+                    if (propertyInfo.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
+                        val = (DateTime)System.Data.SqlTypes.SqlDateTime.MinValue;
+
+                    objDic.Add(propertyInfo.Name, val);
+                }
+            }
+
+            return (object)obj;
+        }
+
+        private static object getDefaultValue(Type t)
+        {
+            if (t == typeof(DateTime))
+                return DateTime.MinValue;
+            else if (t.IsValueType)
+                return Activator.CreateInstance(t);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the prams from SQL string, if the first object in the arguments that were sent to the creator is a string (sql statement)
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <returns>List<string></returns>
+        private static List<string> getPramsFromSqlString(object[] args)
+        {
+            List<string> sqlParams = null;
             if (args.Length > 1 && args[0] is String)
             {
-                startPos = 1;
                 sqlParams = new List<string>();
-                
+
                 string sql = args[0].ToString();
                 Regex regex = new Regex(@"(?<=@)([\w\-]+)");
                 var matches = regex.Matches(sql);
@@ -33,79 +79,7 @@ namespace Poco.Sql
                         sqlParams.Add(matches[i].Value);
                 }
             }
-
-            for (int i = startPos; i < args.Length; i++)
-            {
-                object currentObj = args[i];
-                if (currentObj == null) continue;
-                PropertyInfo[] propertyInfos = currentObj.GetType().GetProperties();
-                foreach (PropertyInfo propertyInfo in propertyInfos.Where(p => p.PropertyType.FullName.StartsWith("System") && !p.PropertyType.FullName.StartsWith("System.Collections"))) // only loop on objects that are not custom class
-                {
-                    if (values.ContainsKey(propertyInfo.Name)) continue;
-                    var property = currentObj.GetType().GetProperty(propertyInfo.Name);
-                    values.Add(propertyInfo.Name, property.GetValue(currentObj));
-                }
-            }
-
-            object obj = createDummyObject(values, sqlParams);
-            return obj;
-        }
-
-        private static object createDummyObject(Dictionary<string, object> values, List<string> sqlParams)
-        {
-            // Code for creating .NET objects at runtime thanks to:
-            // http://benohead.com/create-anonymous-types-at-runtime-in-c-sharp/
-
-            AssemblyBuilder dynamicAssembly =
-                AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("Poco.Sql.Assembly"),
-                AssemblyBuilderAccess.Run);
-
-            ModuleBuilder dynamicModule = dynamicAssembly.DefineDynamicModule("Poco.Sql.Module");
-            TypeBuilder dynamicType = dynamicModule.DefineType("Poco.Sql.DynamicType", TypeAttributes.Public);
-            
-            foreach(string key in values.Keys)
-            {
-                if (sqlParams == null || sqlParams.Contains(key))
-                {
-                    object val = values[key];
-                    addProperty(dynamicType, key, val.GetType());
-                }
-            }
-            
-            Type myType = dynamicType.CreateType();
-            object obj = Activator.CreateInstance(myType);
-
-            foreach (string key in values.Keys)
-            {
-                if (sqlParams == null || sqlParams.Contains(key))
-                    myType.GetProperty(key).SetValue(obj, values[key]);
-            }
-
-            return obj;
-        }
-
-        private static void addProperty(TypeBuilder typeBuilder, string propertyName, Type propertyType)
-        {
-            const MethodAttributes getSetAttr = MethodAttributes.Public | MethodAttributes.HideBySig;
-
-            FieldBuilder field = typeBuilder.DefineField("_" + propertyName, typeof(string), FieldAttributes.Private);
-            PropertyBuilder property = typeBuilder.DefineProperty(propertyName, System.Reflection.PropertyAttributes.None, propertyType, new[] { propertyType });
-
-            MethodBuilder getMethodBuilder = typeBuilder.DefineMethod("get_value", getSetAttr, propertyType, Type.EmptyTypes);
-            ILGenerator getIl = getMethodBuilder.GetILGenerator();
-            getIl.Emit(OpCodes.Ldarg_0);
-            getIl.Emit(OpCodes.Ldfld, field);
-            getIl.Emit(OpCodes.Ret);
-
-            MethodBuilder setMethodBuilder = typeBuilder.DefineMethod("set_value", getSetAttr, null, new[] { propertyType });
-            ILGenerator setIl = setMethodBuilder.GetILGenerator();
-            setIl.Emit(OpCodes.Ldarg_0);
-            setIl.Emit(OpCodes.Ldarg_1);
-            setIl.Emit(OpCodes.Stfld, field);
-            setIl.Emit(OpCodes.Ret);
-
-            property.SetGetMethod(getMethodBuilder);
-            property.SetSetMethod(setMethodBuilder);
+            return sqlParams;
         }
     }
 }
