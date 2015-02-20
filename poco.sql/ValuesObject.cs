@@ -35,11 +35,14 @@ namespace Poco.Sql
                 {
                     if (objDic.ContainsKey(propertyInfo.Name)) continue; // same key can't be added twice (first key found will be used)
 
-                    var val = propertyInfo.GetValue(currentObj);
-                    if (propertyInfo.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                        val = (DateTime)System.Data.SqlTypes.SqlDateTime.MinValue;
+                    if (sqlParams == null || sqlParams.Contains(propertyInfo.Name))
+                    {
+                        var val = propertyInfo.GetValue(currentObj);
+                        if (propertyInfo.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
+                            val = (DateTime)System.Data.SqlTypes.SqlDateTime.MinValue;
 
-                    objDic.Add(propertyInfo.Name, val);
+                        objDic.Add(propertyInfo.Name, val);
+                    }
                 }
             }
 
