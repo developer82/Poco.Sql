@@ -1,6 +1,27 @@
 # Poco.Sql
 ##### Auto generate SQL statements from .NET objects
 
+## Quick Start
+
+Include the Poco.Sql extentions method namespace
+
+```
+using Poco.Sql.Extensions;
+```
+
+Generate SQL statements from ANY object
+
+```
+myObject.PocoSql().Select();
+myObject.PocoSql().Insert();
+myObject.PocoSql().Update();
+myObject.PocoSql().Delete();
+```
+
+[Read the Quick Start guide](https://github.com/developer82/Poco.Sql/wiki/Quick-Start)
+
+**It's that simple!**
+
 ## Configuration
 Confgiration can be executed only once in the application lifecycle. Once configured, it doesn't allow changing the configuration later on.
 
