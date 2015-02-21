@@ -12,10 +12,10 @@ using Poco.Sql.Extensions;
 Generate SQL statements from ANY object
 
 ```
-myObject.PocoSql().Select();
-myObject.PocoSql().Insert();
-myObject.PocoSql().Update();
-myObject.PocoSql().Delete();
+myObject.PocoSql().Select().ToString();
+myObject.PocoSql().Insert().ToString();
+myObject.PocoSql().Update().ToString();
+myObject.PocoSql().Delete().ToString();
 ```
 
 [Read the Quick Start guide](https://github.com/developer82/Poco.Sql/wiki/Quick-Start)
