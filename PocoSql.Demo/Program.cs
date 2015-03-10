@@ -73,7 +73,11 @@ namespace PocoSql.Demo
                 new Order() { UserId = 1, User = user, ItemName = "Item 5", OrderId = 1, Quantity = 1 }
             };
 
-            var currentlyTestingSql = user.PocoSql().Update().ToString();
+            
+            Stopwatch swStopwatch = new Stopwatch();
+            swStopwatch.Start();
+            var currentlyTestingSql = user.PocoSql().Select().Where<User>(u => u.Name.Equals("ophir")).ToString();
+            swStopwatch.Stop();
 
             sql = user.PocoSql().Select().ToString();
             Console.WriteLine("user.PocoSql().Select()");
@@ -107,7 +111,7 @@ namespace PocoSql.Demo
             {
                 sql = vuser.PocoSql().Insert().ToString();
             }
-            catch(CantUpdateVirtualException ex)
+            catch (CantUpdateVirtualException ex)
             {
                 Console.WriteLine("The following exception is expected");
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -120,9 +124,11 @@ namespace PocoSql.Demo
             Console.WriteLine(
                 Environment.NewLine +
                 Environment.NewLine + "~~~~~~~~~~~~~~~~~~~~~~~~~" + Environment.NewLine + "Currently developing: " + Environment.NewLine + currentlyTestingSql);
-            
+            Console.WriteLine("Time elapsed: {0}", swStopwatch.Elapsed);
 
-            Console.ReadLine();
+            //var aaa = StatementsCreator.Create<VUser>().Select().Result;
+
+            //Console.ReadLine();
         }
     }
 }

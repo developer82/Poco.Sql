@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Poco.Sql.Exceptions
 {
-    public class FeatureRequiresMappingException : Exception
+    public class NoSqlBuilderTaskFound : Exception
     {
         public override string Message
         {
             get
             {
-                return this.Source + ": This feature requires a mapping configuration for object. ";
+                return "No tasks were found for sql build.";
             }
         }
     }

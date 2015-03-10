@@ -56,7 +56,13 @@ namespace Poco.Sql.Helpers
             string constantExpressionValue = String.Empty;
 
             if (methodCallExpression.Arguments.Count > 0)
-                constantExpressionValue = ((ConstantExpression)methodCallExpression.Arguments[0]).Value.ToString();
+            {
+                if (methodCallExpression.Arguments[0] is ConstantExpression)
+                    constantExpressionValue = ((ConstantExpression) methodCallExpression.Arguments[0]).Value.ToString();
+                else if (methodCallExpression.Arguments[0] is MemberExpression)
+                    constantExpressionValue = processMemberExpression((MemberExpression) methodCallExpression.Arguments[0],
+                        parentExpression, injectValuesToQueies);
+            }
 
             var expressionStr = methodCallExpression.Object.ToString();
             expressionStr = expressionStr.Substring(expressionStr.LastIndexOf('.') + 1);

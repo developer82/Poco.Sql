@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\CantUpdateVirtualException.cs" />
+    <Compile Include="Exceptions\NoSqlBuilderTaskFound.cs" />
     <Compile Include="Helpers\ExpressionEvaluator.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Interfaces\IPocoSqlMapping.cs" />
@@ -55,11 +56,11 @@
     <Compile Include="PocoSqlStoredProceduresMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyMap.cs" />
-    <Compile Include="QueryBuilder.cs" />
-    <Compile Include="QueryBuilderExceptions.cs" />
-    <Compile Include="QueryBuilderOptions.cs" />
+    <Compile Include="SqlBuilder.cs" />
     <Compile Include="RelationshipMap.cs" />
     <Compile Include="PocoSqlStoredProcedureMap.cs" />
+    <Compile Include="SqlBuilderTask.cs" />
+    <Compile Include="StatementsCreator.cs" />
     <Compile Include="ValuesObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

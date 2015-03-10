@@ -8,9 +8,9 @@ namespace Poco.Sql.Extensions
 {
     public static class PocoSqlExtensions
     {
-        public static QueryBuilder PocoSql(this Object obj)
+        public static SqlBuilder PocoSql(this Object obj)
         {
-            return new QueryBuilder(obj);
+            return new SqlBuilder(obj);
         }
     }
 }
