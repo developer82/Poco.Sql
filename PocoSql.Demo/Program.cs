@@ -30,7 +30,6 @@ namespace PocoSql.Demo
             Console.WriteLine("http://www.webe.co.il");
             Console.WriteLine("");
             Console.ResetColor();
-
             
             // PocoSql configuration
             Configuration.Initialize(config =>
@@ -126,9 +125,7 @@ namespace PocoSql.Demo
                 Environment.NewLine + "~~~~~~~~~~~~~~~~~~~~~~~~~" + Environment.NewLine + "Currently developing: " + Environment.NewLine + currentlyTestingSql);
             Console.WriteLine("Time elapsed: {0}", swStopwatch.Elapsed);
 
-            //var aaa = StatementsCreator.Create<VUser>().Select().Result;
-
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }

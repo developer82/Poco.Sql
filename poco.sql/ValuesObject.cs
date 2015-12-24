@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Poco.Sql
 {
     public class ValuesObject
     {
+        private static readonly SqlDateTime _smallDateTimeMinValue = new SqlDateTime(new DateTime(1900, 01, 01, 00, 00, 00));
+
         public static object Create(params object[] args)
         {
             dynamic obj = new ExpandoObject();
-
-
-            List<string> sqlParams = getPramsFromSqlString(args);
+            
+            List<string> sqlParams = GetPramsFromSqlString(args);
             int startPos = sqlParams == null ? 0 : 1; // if we have sqlParams that means that the first agrument is an sql string
 
             // loop over all objects that were sent for merging
@@ -27,19 +26,27 @@ namespace Poco.Sql
                 object currentObj = args[i];
                 if (currentObj == null) continue;
 
-                IDictionary<String, Object> objDic = (IDictionary<String, Object>)obj;
+                IDictionary<String, Object> objDic = (IDictionary<String, Object>) obj;
 
                 // loop over all elements of current object
                 PropertyInfo[] propertyInfos = currentObj.GetType().GetProperties();
-                foreach (PropertyInfo propertyInfo in propertyInfos.Where(p => p.PropertyType.FullName.StartsWith("System") && !p.PropertyType.FullName.StartsWith("System.Collections"))) // only loop on objects that are not custom class
+                foreach (
+                    PropertyInfo propertyInfo in
+                        propertyInfos.Where(
+                            p =>
+                                p.PropertyType.IsEnum ||
+                                (p.PropertyType.FullName.StartsWith("System") &&
+                                !p.PropertyType.FullName.StartsWith("System.Collections"))))
+                    // only loop on objects that are not custom class
                 {
-                    if (objDic.ContainsKey(propertyInfo.Name)) continue; // same key can't be added twice (first key found will be used)
+                    if (objDic.ContainsKey(propertyInfo.Name))
+                        continue; // same key can't be added twice (first key found will be used)
 
                     if (sqlParams == null || sqlParams.Contains(propertyInfo.Name))
                     {
                         var val = propertyInfo.GetValue(currentObj);
-                        if (propertyInfo.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                            val = (DateTime)System.Data.SqlTypes.SqlDateTime.MinValue;
+                        if (propertyInfo.PropertyType == typeof (DateTime) && (DateTime) val == DateTime.MinValue)
+                            val = (DateTime) System.Data.SqlTypes.SqlDateTime.MinValue;
 
                         objDic.Add(propertyInfo.Name, val);
                     }
@@ -59,12 +66,7 @@ namespace Poco.Sql
             return null;
         }
 
-        /// <summary>
-        /// Gets the prams from SQL string, if the first object in the arguments that were sent to the creator is a string (sql statement)
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        /// <returns>List<string></returns>
-        private static List<string> getPramsFromSqlString(object[] args)
+        private static List<string> GetPramsFromSqlString(object[] args)
         {
             List<string> sqlParams = null;
             if (args.Length > 1 && args[0] is String)
