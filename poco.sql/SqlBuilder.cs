@@ -478,8 +478,7 @@ namespace Poco.Sql
 
         public SqlBuilder Join<T>(string tableName, Expression<Func<T, bool>> on)
         {
-
-
+            throw new NotImplementedException();
             return this;
         }
         #endregion
